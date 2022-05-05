@@ -1,0 +1,21 @@
+{
+    "name": "model/cache",
+    "description": "Simple wrapper around symfony/cache for ModEl Framework",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Domenico Giambra",
+            "email": "zorinik@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"Model\\Cache\\": "src/"}
+    },
+    "require": {
+        "symfony/cache": "^6.0",
+        "composer-runtime-api": "^2.1"
+    },
+    "suggest": {
+        "model/redis": "In order to use the redis adapter"
+    }
+}
