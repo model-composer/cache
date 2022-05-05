@@ -1,7 +1,7 @@
 <?php namespace Model\Cache;
 
 use Composer\InstalledVersions;
-use Symfony\Component\Cache\Adapter\AbstractAdapter;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
 use Symfony\Component\Cache\Adapter\RedisTagAwareAdapter;
 
@@ -11,10 +11,10 @@ class Cache
 
 	/**
 	 * @param string $name
-	 * @return AbstractAdapter
+	 * @return AdapterInterface
 	 * @throws \Exception
 	 */
-	public static function getCacheAdapter(string $name): AbstractAdapter
+	public static function getCacheAdapter(string $name): AdapterInterface
 	{
 		if (!isset(self::$adapters[$name])) {
 			switch ($name) {
