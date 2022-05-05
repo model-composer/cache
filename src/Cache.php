@@ -2,8 +2,8 @@
 
 use Composer\InstalledVersions;
 use Symfony\Component\Cache\Adapter\AbstractAdapter;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
+use Symfony\Component\Cache\Adapter\RedisTagAwareAdapter;
 
 class Cache
 {
@@ -26,11 +26,11 @@ class Cache
 					if (!$redis)
 						throw new \Exception('Invalid Redis configuration');
 
-					self::$adapters[$name] = new RedisAdapter($redis);
+					self::$adapters[$name] = new RedisTagAwareAdapter($redis);
 					break;
 
 				case 'file':
-					self::$adapters[$name] = new FilesystemAdapter();
+					self::$adapters[$name] = new FilesystemTagAwareAdapter();
 					break;
 
 				default:
