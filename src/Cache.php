@@ -11,15 +11,18 @@ class Cache
 	private static array $adapters = [];
 
 	/**
-	 * @param string $name
+	 * @param string|null $name
 	 * @return AdapterInterface
 	 * @throws \Exception
 	 */
-	public static function getCacheAdapter(string $name): AdapterInterface
+	public static function getCacheAdapter(?string $name = null): AdapterInterface
 	{
-		if (!isset(self::$adapters[$name])) {
-			$config = self::getConfig();
+		$config = self::getConfig();
 
+		if ($name === null)
+			$name = $config['default_adapter'];
+
+		if (!isset(self::$adapters[$name])) {
 			switch ($name) {
 				case 'redis':
 					if (!InstalledVersions::isInstalled('model/redis'))
@@ -55,6 +58,7 @@ class Cache
 	{
 		return Config::get('cache', function () {
 			return [
+				'default_adapter' => 'file',
 				'namespace' => null,
 			];
 		});
