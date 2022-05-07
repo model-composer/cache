@@ -1,6 +1,7 @@
 <?php namespace Model\Cache;
 
 use Composer\InstalledVersions;
+use Model\Config\Config;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
 use Symfony\Component\Cache\Adapter\RedisTagAwareAdapter;
@@ -17,6 +18,8 @@ class Cache
 	public static function getCacheAdapter(string $name): AdapterInterface
 	{
 		if (!isset(self::$adapters[$name])) {
+			$config = self::getConfig();
+
 			switch ($name) {
 				case 'redis':
 					if (!InstalledVersions::isInstalled('model/redis'))
@@ -26,11 +29,12 @@ class Cache
 					if (!$redis)
 						throw new \Exception('Invalid Redis configuration');
 
-					self::$adapters[$name] = new RedisTagAwareAdapter($redis);
+					$namespace = $config['namespace'] ?? \Model\Redis\Redis::getNamespace() ?? '';
+					self::$adapters[$name] = new RedisTagAwareAdapter($redis, $namespace);
 					break;
 
 				case 'file':
-					self::$adapters[$name] = new FilesystemTagAwareAdapter();
+					self::$adapters[$name] = new FilesystemTagAwareAdapter($config['namespace'] ?? '');
 					break;
 
 				default:
@@ -39,5 +43,20 @@ class Cache
 		}
 
 		return self::$adapters[$name];
+	}
+
+	/**
+	 * Config retriever
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
+	private static function getConfig(): array
+	{
+		return Config::get('cache', function () {
+			return [
+				'namespace' => null,
+			];
+		});
 	}
 }

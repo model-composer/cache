@@ -13,7 +13,8 @@
     },
     "require": {
         "symfony/cache": "^6.0",
-        "composer-runtime-api": "^2.1"
+        "composer-runtime-api": "^2.1",
+        "model/config": "^0.4.1"
     },
     "suggest": {
         "model/redis": "In order to use the redis adapter"
