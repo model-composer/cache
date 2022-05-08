@@ -62,6 +62,9 @@ class Cache
 		$invalidations = $item->isHit() ? $item->get() : [];
 
 		$invalidationKey = $type . '-' . json_encode($keys);
+		if (isset($invalidations[$invalidationKey]))
+			return;
+
 		$invalidations[$invalidationKey] = [
 			'type' => $type,
 			'keys' => $keys,
