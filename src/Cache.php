@@ -2,9 +2,9 @@
 
 use Composer\InstalledVersions;
 use Model\Config\Config;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
 use Symfony\Component\Cache\Adapter\RedisTagAwareAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 
 class Cache
 {
@@ -12,10 +12,10 @@ class Cache
 
 	/**
 	 * @param string|null $name
-	 * @return AdapterInterface
+	 * @return TagAwareAdapterInterface
 	 * @throws \Exception
 	 */
-	public static function getCacheAdapter(?string $name = null): AdapterInterface
+	public static function getCacheAdapter(?string $name = null): TagAwareAdapterInterface
 	{
 		$config = self::getConfig();
 
@@ -46,6 +46,53 @@ class Cache
 		}
 
 		return self::$adapters[$name];
+	}
+
+	/**
+	 * Register the items that you want invalidate in the invalidation procedure (by tag or by key)
+	 *
+	 * @param string $type
+	 * @param array $keys
+	 * @return void
+	 */
+	public static function registerInvalidation(string $type, array $keys): void
+	{
+		$cache = self::getCacheAdapter();
+		$item = $cache->getItem('model.cache.invalidations');
+		$invalidations = $item->isHit() ? $item->get() : [];
+
+		$invalidations[] = [
+			'type' => $type,
+			'keys' => $keys,
+		];
+
+		$item->set($invalidations);
+		$cache->save($item);
+	}
+
+	/**
+	 * Invalidate cache as instructed
+	 *
+	 * @return void
+	 */
+	public static function invalidate(): void
+	{
+		$cache = self::getCacheAdapter();
+		$item = $cache->getItem('model.cache.invalidations');
+		$invalidations = $item->isHit() ? $item->get() : [];
+
+		foreach ($invalidations as $invalidation) {
+			switch ($invalidation['type']) {
+				case 'tag':
+					$cache->invalidateTags($invalidation['keys']);
+					break;
+				case 'keys':
+					$cache->deleteItems($invalidation['keys']);
+					break;
+			}
+		}
+
+		$cache->deleteItem('model.cache.invalidations');
 	}
 
 	/**
