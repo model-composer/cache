@@ -53,19 +53,21 @@ class Cache
 	 *
 	 * @param string $type
 	 * @param array $keys
+	 * @param string|null $adapter
 	 * @return void
 	 */
-	public static function registerInvalidation(string $type, array $keys): void
+	public static function registerInvalidation(string $type, array $keys, ?string $adapter = null): void
 	{
 		$cache = self::getCacheAdapter();
 		$item = $cache->getItem('model.cache.invalidations');
 		$invalidations = $item->isHit() ? $item->get() : [];
 
-		$invalidationKey = $type . '-' . json_encode($keys);
+		$invalidationKey = $type . '-' . json_encode($keys) . ($adapter ? '-' . $adapter : '');
 		if (isset($invalidations[$invalidationKey]))
 			return;
 
 		$invalidations[$invalidationKey] = [
+			'adapter' => $adapter,
 			'type' => $type,
 			'keys' => $keys,
 		];
@@ -86,12 +88,13 @@ class Cache
 		$invalidations = $item->isHit() ? $item->get() : [];
 
 		foreach ($invalidations as $invalidation) {
+			$adapter = !empty($invalidation['adapter']) ? self::getCacheAdapter($invalidation['adapter']) : $cache;
 			switch ($invalidation['type']) {
 				case 'tag':
-					$cache->invalidateTags($invalidation['keys']);
+					$adapter->invalidateTags($invalidation['keys']);
 					break;
 				case 'keys':
-					$cache->deleteItems($invalidation['keys']);
+					$adapter->deleteItems($invalidation['keys']);
 					break;
 			}
 		}
