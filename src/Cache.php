@@ -111,13 +111,15 @@ class Cache
 	private static function getConfig(): array
 	{
 		return Config::get('cache', [
-			'version' => '0.3.0',
-			'migration' => function () {
-				return [
-					'default_adapter' => 'file',
-					'namespace' => null,
-				];
-			},
+			[
+				'version' => '0.3.0',
+				'migration' => function () {
+					return [
+						'default_adapter' => 'file',
+						'namespace' => null,
+					];
+				},
+			],
 		]);
 	}
 }
