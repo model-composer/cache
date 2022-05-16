@@ -113,7 +113,10 @@ class Cache
 		return Config::get('cache', [
 			[
 				'version' => '0.3.0',
-				'migration' => function () {
+				'migration' => function (array $config, string $env) {
+					if ($config) // Already existing
+						return $config;
+
 					return [
 						'default_adapter' => 'file',
 						'namespace' => null,
