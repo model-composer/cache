@@ -14,7 +14,7 @@
     "require": {
         "symfony/cache": "^6.0",
         "composer-runtime-api": "^2.1",
-        "model/config": "^0.4.1"
+        "model/config": "^0.5.0"
     },
     "suggest": {
         "model/redis": "In order to use the redis adapter"

@@ -49,7 +49,7 @@ class Cache
 	}
 
 	/**
-	 * Register the items that you want invalidate in the invalidation procedure (by tag or by key)
+	 * Register the items that you want to invalidate in the invalidation procedure (by tag or by key)
 	 *
 	 * @param string $type
 	 * @param array $keys
@@ -110,11 +110,14 @@ class Cache
 	 */
 	private static function getConfig(): array
 	{
-		return Config::get('cache', function () {
-			return [
-				'default_adapter' => 'file',
-				'namespace' => null,
-			];
-		});
+		return Config::get('cache', [
+			'version' => '0.3.0',
+			'migration' => function () {
+				return [
+					'default_adapter' => 'file',
+					'namespace' => null,
+				];
+			},
+		]);
 	}
 }
