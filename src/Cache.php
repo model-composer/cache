@@ -102,7 +102,8 @@ class Cache
 			$adapter = !empty($invalidation['adapter']) ? self::getCacheAdapter($invalidation['adapter']) : $cache;
 			switch ($invalidation['type']) {
 				case 'tag':
-					$adapter->invalidateTags($invalidation['keys']);
+					if (self::isTagAware($adapter))
+						$adapter->invalidateTags($invalidation['keys']);
 					break;
 				case 'keys':
 					$adapter->deleteItems($invalidation['keys']);
