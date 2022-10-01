@@ -2,6 +2,8 @@
 
 use Composer\InstalledVersions;
 use Model\Config\Config;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemTagAwareAdapter;
 use Symfony\Component\Cache\Adapter\RedisTagAwareAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
@@ -12,10 +14,10 @@ class Cache
 
 	/**
 	 * @param string|null $name
-	 * @return TagAwareAdapterInterface
+	 * @return AdapterInterface
 	 * @throws \Exception
 	 */
-	public static function getCacheAdapter(?string $name = null): TagAwareAdapterInterface
+	public static function getCacheAdapter(?string $name = null): AdapterInterface
 	{
 		$config = self::getConfig();
 
@@ -37,7 +39,7 @@ class Cache
 					break;
 
 				case 'file':
-					self::$adapters[$name] = new FilesystemTagAwareAdapter($config['namespace'] ?? '');
+					self::$adapters[$name] = function_exists('symlink') ? new FilesystemTagAwareAdapter($config['namespace'] ?? '') : new FilesystemAdapter($config['namespace'] ?? '');
 					break;
 
 				default:
@@ -46,6 +48,15 @@ class Cache
 		}
 
 		return self::$adapters[$name];
+	}
+
+	/**
+	 * @param AdapterInterface $adapter
+	 * @return bool
+	 */
+	public static function isTagAware(AdapterInterface $adapter): bool
+	{
+		return $adapter instanceof TagAwareAdapterInterface;
 	}
 
 	/**
