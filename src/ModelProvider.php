@@ -1,16 +1,11 @@
 <?php namespace Model\Cache;
 
-use Model\Core\ModelProviderInterface;
+use Model\Core\AbstractModelProvider;
 
-class ModelProvider implements ModelProviderInterface
+class ModelProvider extends AbstractModelProvider
 {
 	public static function realign(): void
 	{
 		Cache::invalidate();
-	}
-
-	public static function getDependencies(): array
-	{
-		return [];
 	}
 }
