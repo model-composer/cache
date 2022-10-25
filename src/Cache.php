@@ -39,7 +39,7 @@ class Cache
 					break;
 
 				case 'file':
-					self::$adapters[$name] = function_exists('symlink') ? new FilesystemTagAwareAdapter($config['namespace'] ?? '') : new FilesystemAdapter($config['namespace'] ?? '');
+					self::$adapters[$name] = function_exists('symlink') ? new FilesystemTagAwareAdapter($config['namespace'] ?? '', 0, $config['directory'] ?? null) : new FilesystemAdapter($config['namespace'] ?? '', 0, $config['directory'] ?? null);
 					break;
 
 				default:
