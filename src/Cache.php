@@ -19,7 +19,7 @@ class Cache
 	 */
 	public static function getCacheAdapter(?string $name = null): AdapterInterface
 	{
-		$config = self::getConfig();
+		$config = Config::get('cache');
 
 		if ($name === null)
 			$name = $config['default_adapter'];
@@ -112,29 +112,5 @@ class Cache
 		}
 
 		$cache->deleteItem('model.cache.invalidations');
-	}
-
-	/**
-	 * Config retriever
-	 *
-	 * @return array
-	 * @throws \Exception
-	 */
-	private static function getConfig(): array
-	{
-		return Config::get('cache', [
-			[
-				'version' => '0.3.0',
-				'migration' => function (array $config, string $env) {
-					if ($config) // Already existing
-						return $config;
-
-					return [
-						'default_adapter' => 'file',
-						'namespace' => null,
-					];
-				},
-			],
-		]);
 	}
 }
