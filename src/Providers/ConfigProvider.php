@@ -1,4 +1,4 @@
-<?php namespace Model\Cache;
+<?php namespace Model\Cache\Providers;
 
 use Model\Config\AbstractConfigProvider;
 
