@@ -1,5 +1,6 @@
 <?php namespace Model\Cache\Providers;
 
+use Model\Cache\Cache;
 use Model\Core\AbstractModelProvider;
 
 class ModelProvider extends AbstractModelProvider
