@@ -7,6 +7,6 @@ class ModelProvider extends AbstractModelProvider
 {
 	public static function realign(): void
 	{
-		Cache::invalidate();
+		Cache::clear();
 	}
 }

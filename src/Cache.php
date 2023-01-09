@@ -60,57 +60,12 @@ class Cache
 	}
 
 	/**
-	 * Register the items that you want to invalidate in the invalidation procedure (by tag or by key)
-	 *
-	 * @param string $type
-	 * @param array $keys
 	 * @param string|null $adapter
 	 * @return void
 	 */
-	public static function registerInvalidation(string $type, array $keys, ?string $adapter = null): void
+	public static function clear(?string $adapter = null): void
 	{
-		$cache = self::getCacheAdapter();
-		$item = $cache->getItem('model.cache.invalidations');
-		$invalidations = $item->isHit() ? $item->get() : [];
-
-		$invalidationKey = $type . '-' . json_encode($keys) . ($adapter ? '-' . $adapter : '');
-		if (isset($invalidations[$invalidationKey]))
-			return;
-
-		$invalidations[$invalidationKey] = [
-			'adapter' => $adapter,
-			'type' => $type,
-			'keys' => $keys,
-		];
-
-		$item->set($invalidations);
-		$cache->save($item);
-	}
-
-	/**
-	 * Invalidate cache as instructed
-	 *
-	 * @return void
-	 */
-	public static function invalidate(): void
-	{
-		$cache = self::getCacheAdapter();
-		$item = $cache->getItem('model.cache.invalidations');
-		$invalidations = $item->isHit() ? $item->get() : [];
-
-		foreach ($invalidations as $invalidation) {
-			$adapter = !empty($invalidation['adapter']) ? self::getCacheAdapter($invalidation['adapter']) : $cache;
-			switch ($invalidation['type']) {
-				case 'tag':
-					if (self::isTagAware($adapter))
-						$adapter->invalidateTags($invalidation['keys']);
-					break;
-				case 'keys':
-					$adapter->deleteItems($invalidation['keys']);
-					break;
-			}
-		}
-
-		$cache->deleteItem('model.cache.invalidations');
+		$cache = self::getCacheAdapter($adapter);
+		$cache->clear();
 	}
 }
