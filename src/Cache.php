@@ -25,6 +25,8 @@ class Cache
 			$name = $config['default_adapter'];
 
 		if (!isset(self::$adapters[$name])) {
+			$namespace = 'modelcache-' . ($config['namespace'] ?? '');
+
 			switch ($name) {
 				case 'redis':
 					if (!InstalledVersions::isInstalled('model/redis'))
@@ -34,12 +36,11 @@ class Cache
 					if (!$redis)
 						throw new \Exception('Invalid Redis configuration');
 
-					$namespace = $config['namespace'] ?? \Model\Redis\Redis::getNamespace() ?? '';
 					self::$adapters[$name] = new RedisTagAwareAdapter($redis, $namespace);
 					break;
 
 				case 'file':
-					self::$adapters[$name] = function_exists('symlink') ? new FilesystemTagAwareAdapter($config['namespace'] ?? '', 0, $config['directory'] ?? null) : new FilesystemAdapter($config['namespace'] ?? '', 0, $config['directory'] ?? null);
+					self::$adapters[$name] = function_exists('symlink') ? new FilesystemTagAwareAdapter($namespace, 0, $config['directory'] ?? null) : new FilesystemAdapter($namespace, 0, $config['directory'] ?? null);
 					break;
 
 				default:
