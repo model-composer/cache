@@ -52,11 +52,13 @@ class Cache
 	}
 
 	/**
-	 * @param AdapterInterface $adapter
+	 * @param AdapterInterface|null $adapter
 	 * @return bool
 	 */
-	public static function isTagAware(AdapterInterface $adapter): bool
+	public static function isTagAware(?AdapterInterface $adapter = null): bool
 	{
+		if ($adapter === null)
+			$adapter = self::getCacheAdapter();
 		return $adapter instanceof TagAwareAdapterInterface;
 	}
 
