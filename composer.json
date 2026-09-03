@@ -13,6 +13,7 @@
     },
     "require": {
         "symfony/cache": "^8.0",
+        "psr/log": "^3.0",
         "composer-runtime-api": "^2.1",
         "model/config": "^0.7.0"
     },
