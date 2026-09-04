@@ -1,6 +1,7 @@
 <?php namespace Model\Cache;
 
 use Psr\Log\AbstractLogger;
+use Psr\Log\LogLevel;
 
 /**
  * Symfony's adapters never throw: every failure (a non-writable cache directory or file, a dead Redis connection, ...) is just
@@ -17,6 +18,15 @@ class ErrorLogger extends AbstractLogger
 	];
 
 	/**
+	 * Symfony's adapters are chatty at these levels (e.g. LockRegistry logs an "info" every time it acquires a lock to compute an item); they carry no failure, so they must not surface as PHP warnings
+	 */
+	private const SILENT_LEVELS = [
+		LogLevel::DEBUG,
+		LogLevel::INFO,
+		LogLevel::NOTICE,
+	];
+
+	/**
 	 * @param mixed $level
 	 * @param \Stringable|string $message
 	 * @param array $context
@@ -25,6 +35,9 @@ class ErrorLogger extends AbstractLogger
 	 */
 	public function log($level, \Stringable|string $message, array $context = []): void
 	{
+		if (in_array($level, self::SILENT_LEVELS, true))
+			return;
+
 		$replace = [];
 		foreach ($context as $k => $v) {
 			if (is_scalar($v))
